@@ -1,11 +1,12 @@
 <script lang="ts">
   import _ from "lodash";
-
   import oldQuestions from "./data/oldQuestions.json";
+
   type Choice = {
     text: string;
     correct: boolean;
   };
+
   type Question = {
     text: string;
     choices: Choice[];
@@ -13,15 +14,15 @@
 
   const questions: Question[] = [];
 
-  const oldQuestionsSpliited = oldQuestions.trim().split("\n");
+  const oldQuestionsSplited = oldQuestions.trim().split("\n");
 
-  for (let i = 0; i < oldQuestionsSpliited.length; i += 4) {
-    const questionText = oldQuestionsSpliited[i].trim();
+  for (let i = 0; i < oldQuestionsSplited.length; i += 4) {
+    const questionText = oldQuestionsSplited[i].trim();
 
     const choices: Choice[] = [];
 
     for (let j = 0; j < 3; j++) {
-      let choiceText = oldQuestionsSpliited[i + j + 1].trim();
+      let choiceText = oldQuestionsSplited[i + j + 1].trim();
       const correct = choiceText.endsWith("*");
       if (correct) choiceText = choiceText.slice(0, -1);
 
@@ -62,7 +63,7 @@
   }
 
   $: if (selectedChoiceIdx !== undefined) {
-    setTimeout(nextQuestion, 1000);
+    setTimeout(nextQuestion, 1500);
   }
 </script>
 
