@@ -67,7 +67,7 @@
   }
 </script>
 
-<main class="p-4 min-h-[95vh]">
+<main class="p-4 min-h-[80vh]">
   <p class="mb-6 text-sm">剩餘問題: {shuffledQuestions.length}</p>
 
   {#if currentQuestion}
@@ -76,7 +76,7 @@
     <ul class="mt-4">
       {#each currentQuestion.choices as choice, i}
         <li
-          class="py-1 px-2"
+          class="py-3.5 px-2"
           on:click={() =>
             selectedChoiceIdx === undefined && (selectedChoiceIdx = i)}
           class:bg-green-500={selectedChoice && choice.correct}
