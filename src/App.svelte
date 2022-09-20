@@ -1,6 +1,6 @@
 <script lang="ts">
   import _ from "lodash";
-  import oldQuestions from "./data/oldQuestions.json";
+  import questionsText from "./data/questions.json";
 
   type Choice = {
     text: string;
@@ -14,7 +14,7 @@
 
   const questions: Question[] = [];
 
-  const oldQuestionsSplited = oldQuestions.trim().split("\n");
+  const oldQuestionsSplited = questionsText.trim().split("\n");
 
   for (let i = 0; i < oldQuestionsSplited.length; i += 4) {
     const questionText = oldQuestionsSplited[i].trim();
