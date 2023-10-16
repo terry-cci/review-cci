@@ -1,6 +1,6 @@
 <script lang="ts">
   import _ from "lodash";
-  import questionsText from "./data/questions.json";
+  import questionsText from "./data/iam-questions";
 
   type Choice = {
     text: string;
@@ -8,35 +8,41 @@
   };
 
   type Question = {
+    id: number;
     text: string;
     choices: Choice[];
   };
 
-  const questions: Question[] = [];
+  const questions: Question[] = [
+    ...questionsText.matchAll(
+      /(\d+?)\.? (.+?)A\. (.+?)B\. (.+?)C\. (.+?)D\. (.+?)(E\. (.+?))?答案：([ABCDE])/gs
+    ),
+  ].map((q) => {
+    // console.debug(q);
+    const question: Partial<Question> = {};
 
-  const oldQuestionsSplited = questionsText.trim().split("\n");
+    question.text = q[2].trim();
+    question.id = parseInt(q[1]);
 
-  for (let i = 0; i < oldQuestionsSplited.length; i += 4) {
-    const questionText = oldQuestionsSplited[i].trim();
+    question.choices = [3, 4, 5, 6, 8]
+      .map((i) =>
+        q[i]
+          ? {
+              text: q[i].trim(),
+              correct: false,
+            }
+          : undefined
+      )
+      .filter((v) => v) as Choice[];
 
-    const choices: Choice[] = [];
+    question.choices[q[9].charCodeAt(0) - "A".charCodeAt(0)].correct = true;
 
-    for (let j = 0; j < 3; j++) {
-      let choiceText = oldQuestionsSplited[i + j + 1].trim();
-      const correct = choiceText.endsWith("*");
-      if (correct) choiceText = choiceText.slice(0, -1);
+    _.shuffle(question.choices);
 
-      choices.push({
-        text: choiceText,
-        correct,
-      });
-    }
+    return question as Question;
+  });
 
-    questions.push({
-      text: questionText,
-      choices,
-    });
-  }
+  // console.debug(questions);
 
   let shuffledQuestions = _.shuffle(questions);
 
@@ -64,6 +70,7 @@
 
   $: if (selectedChoiceIdx !== undefined) {
     setTimeout(nextQuestion, 1500);
+    // console.debug(currentQuestion);
   }
 </script>
 
@@ -71,25 +78,27 @@
   <p class="mb-6 text-sm">剩餘問題: {shuffledQuestions.length}</p>
 
   {#if currentQuestion}
-    <p class="text-lg">{currentQuestion.text}</p>
+    <p class="text-lg whitespace-pre-line">
+      {currentQuestion.id}. {currentQuestion.text}
+    </p>
 
-    <ul class="mt-4">
+    <ol class="mt-4">
       {#each currentQuestion.choices as choice, i}
         <li
-          class="py-3.5 px-2"
+          class="py-3.5 px-2 whitespace-pre-line"
           on:click={() =>
             selectedChoiceIdx === undefined && (selectedChoiceIdx = i)}
-          class:bg-green-500={selectedChoice && choice.correct}
+          class:bg-green-600={selectedChoice && choice.correct}
           class:bg-red-500={selectedChoiceIdx === i && !choice.correct}
           class:text-white={selectedChoiceIdx === i ||
             (selectedChoice && choice.correct)}
           class:font-bold={selectedChoiceIdx === i ||
             (selectedChoice && choice.correct)}
         >
-          {choice.text}
+          {["A", "B", "C", "D", "E"][i]}. {choice.text}
         </li>
       {/each}
-    </ul>
+    </ol>
   {:else}
     <p>你已完成所有題目</p>
   {/if}
